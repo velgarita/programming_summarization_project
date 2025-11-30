@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from typing import List, Dict
 from enum import Enum
 
+
 class SummaryMethod(Enum):
     FREQUENCY_BASED = "frequency"
     FEATURE_BASED = "feature_based"
+
 
 @dataclass
 class Sentence:
@@ -13,6 +15,7 @@ class Sentence:
     features: Dict[str, float] = None
     importance_score: float = 0.0
     is_important: bool = False
+
 
 @dataclass
 class TextStats:
@@ -24,6 +27,7 @@ class TextStats:
     avg_sentence_length: float
     lexical_diversity: float
     reading_time_minutes: float
+
 
 @dataclass
 class SummaryResult:
