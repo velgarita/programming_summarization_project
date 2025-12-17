@@ -1,35 +1,43 @@
-from typing import Dict, List
-
-
-class FeatureExtractor:
-    def extract_features(
-        self, sentence: str, entire_text: List[str]
-    ) -> Dict[str, float]:
-        features = {}
-        features["sentence_length"] = len(sentence.split())
-        features["unique_words_ratio"] = self._unique_words_ratio(sentence)
-        features["contains_digits"] = self._contains_digits(sentence)
-        features["tf_isf_score"] = self._calculate_tf_isf(sentence, entire_text)
-        features["noun_ratio"] = self._pos_ratio(sentence, "NOUN")
-        features["verb_ratio"] = self._pos_ratio(sentence, "VERB")
-        features["proper_noun_count"] = self._count_proper_nouns(sentence)
-        return features
+from typing import List
+from .entities import SummaryMethod, SummaryResult
+from .methods import FrequencyBasedSummarizer, FeatureBasedSummarizer
+from .statistics import StatisticsCalculator
+from .utils.text_processing import split_into_sentences
+from .utils.file_io import save_json
+from pathlib import Path
 
 
 class TextSummarizer:
-    def __init__(self, method: SummaryMethod):
+    def __init__(self, method: SummaryMethod = SummaryMethod.FEATURE_BASED):
         self.method = method
-        self.feature_extractor = FeatureExtractor()
-        self.classifier = None
+
+        if method == SummaryMethod.FREQUENCY_BASED:
+            self.summarizer = FrequencyBasedSummarizer()
+        else:  # FEATURE_BASED
+            self.summarizer = FeatureBasedSummarizer()
+
+        self.stats_calculator = StatisticsCalculator()
 
     def summarize(self, text: str, compression_ratio: float = 0.3) -> SummaryResult:
-        sentences = self._split_into_sentences(text)
-        features = self._extract_sentence_features(sentences)
-        important_sentences = self._select_important_sentences(
-            sentences, features, compression_ratio
-        )
-        summary_text = self._construct_summary(important_sentences)
-        statistics = self._calculate_statistics(text, summary_text)
+        if not 0 < compression_ratio <= 1:
+            raise ValueError("compression_ratio должен быть в диапазоне (0, 1]")
+
+        sentences = split_into_sentences(text)
+
+        if not sentences:
+            return SummaryResult(
+                original_text=text,
+                summary_text="",
+                important_sentences=[],
+                statistics=self.stats_calculator.calculate_stats(text, ""),
+                method_used=self.method,
+            )
+
+        important_sentences = self.summarizer.summarize(sentences, compression_ratio)
+
+        summary_text = " ".join(sent.text for sent in important_sentences)
+
+        statistics = self.stats_calculator.calculate_stats(text, summary_text)
 
         return SummaryResult(
             original_text=text,
@@ -39,19 +47,57 @@ class TextSummarizer:
             method_used=self.method,
         )
 
+    def save_result(self, result: SummaryResult, output_dir: str) -> None:
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
 
-class StatisticsCalculator:
-    def calculate_comparison_stats(self, original: str, summary: str) -> TextStats:
-        original_sentences = self._split_into_sentences(original)
-        summary_sentences = self._split_into_sentences(summary)
+        summary_file = output_path / "summary.txt"
+        with open(summary_file, "w", encoding="utf-8") as f:
+            f.write(result.summary_text)
 
-        return TextStats(
-            original_sentences_count=len(original_sentences),
-            original_words_count=len(original.split()),
-            summary_sentences_count=len(summary_sentences),
-            summary_words_count=len(summary.split()),
-            compression_ratio=1 - (len(summary.split()) / len(original.split())),
-            avg_sentence_length=self._avg_sentence_length(original_sentences),
-            lexical_diversity=self._lexical_diversity(original),
-            reading_time_minutes=self._estimate_reading_time(original),
-        )
+        stats_dict = {
+            "original_sentences_count": result.statistics.original_sentences_count,
+            "original_words_count": result.statistics.original_words_count,
+            "summary_sentences_count": result.statistics.summary_sentences_count,
+            "summary_words_count": result.statistics.summary_words_count,
+            "compression_ratio": result.statistics.compression_ratio,
+            "reading_time_minutes": result.statistics.reading_time_minutes,
+            "original_readability": {
+                "flesch_score": result.statistics.original_readability.flesch_score,
+                "avg_sentence_length": result.statistics.original_readability.avg_sentence_length,
+                "avg_word_length": result.statistics.original_readability.avg_word_length,
+                "lexical_diversity": result.statistics.original_readability.lexical_diversity,
+                "total_sentences": result.statistics.original_readability.total_sentences,
+                "total_words": result.statistics.original_readability.total_words,
+                "unique_words": result.statistics.original_readability.unique_words,
+            },
+            "summary_readability": {
+                "flesch_score": result.statistics.summary_readability.flesch_score,
+                "avg_sentence_length": result.statistics.summary_readability.avg_sentence_length,
+                "avg_word_length": result.statistics.summary_readability.avg_word_length,
+                "lexical_diversity": result.statistics.summary_readability.lexical_diversity,
+                "total_sentences": result.statistics.summary_readability.total_sentences,
+                "total_words": result.statistics.summary_readability.total_words,
+                "unique_words": result.statistics.summary_readability.unique_words,
+            },
+            "method_used": result.method_used.value,
+        }
+
+        stats_file = output_path / "statistics.json"
+        from .utils.file_io import save_json
+
+        save_json(stats_file, stats_dict)
+
+        sentences_info = []
+        for sent in result.important_sentences:
+            sentences_info.append(
+                {
+                    "text": sent.text,
+                    "position": sent.position,
+                    "importance_score": sent.importance_score,
+                    "features": sent.features,
+                }
+            )
+
+        sentences_file = output_path / "sentences_info.json"
+        save_json(sentences_file, sentences_info)

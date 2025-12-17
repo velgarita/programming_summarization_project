@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Any, Optional
 from enum import Enum
 
 
@@ -12,9 +12,24 @@ class SummaryMethod(Enum):
 class Sentence:
     text: str
     position: int
-    features: Dict[str, float] = None
+    features: Optional[Dict[str, float]] = None
     importance_score: float = 0.0
     is_important: bool = False
+
+    def __post_init__(self):
+        if self.features is None:
+            self.features = {}
+
+
+@dataclass
+class ReadabilityMetrics:
+    flesch_score: float
+    avg_sentence_length: float
+    avg_word_length: float
+    lexical_diversity: float
+    total_sentences: int
+    total_words: int
+    unique_words: int
 
 
 @dataclass
@@ -24,9 +39,9 @@ class TextStats:
     summary_sentences_count: int
     summary_words_count: int
     compression_ratio: float
-    avg_sentence_length: float
-    lexical_diversity: float
     reading_time_minutes: float
+    original_readability: ReadabilityMetrics
+    summary_readability: ReadabilityMetrics
 
 
 @dataclass

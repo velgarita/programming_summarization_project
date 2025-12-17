@@ -1,8 +1,7 @@
+click>=8.0
 nltk>=3.8
 pymorphy2>=0.9
-pymorphy2-dicts-ru>=2.4.417127.1
 scikit-learn>=1.2
 matplotlib>=3.5
 pandas>=1.5
-click>=8.0
 numpy>=1.21
