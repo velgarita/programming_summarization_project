@@ -1,6 +1,7 @@
 import pytest
 from src.textsummarizer.core import TextSummarizer
 from src.textsummarizer.entities import SummaryMethod
+# Правильная строчка импорта: `from textsummarizer import TextSummarizer, SummaryMethod`
 
 
 class TestTextSummarizer:

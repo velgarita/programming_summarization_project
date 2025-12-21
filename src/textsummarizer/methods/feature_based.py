@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from typing import List, Dict
 import re
 from .base import BaseSummarizer
@@ -13,7 +15,7 @@ class FeatureBasedSummarizer(BaseSummarizer):
     def __init__(self):
         self._position_weights = {"first": 1.0, "last": 0.8, "middle": 0.3}
 
-        self._keywords = {
+        self._keywords = {  # Следовало вынести из py-файлов. Например, в txt.
             "важно",
             "следовательно",
             "итог",
@@ -38,7 +40,7 @@ class FeatureBasedSummarizer(BaseSummarizer):
     def _extract_features(
         self, sentence: str, idx: int, total_sentences: int
     ) -> Dict[str, float]:
-        features = {}
+        features = {}  # Лишняя строчка
 
         features["position_score"] = self._calculate_position_score(
             idx, total_sentences
@@ -68,6 +70,9 @@ class FeatureBasedSummarizer(BaseSummarizer):
 
         readability_metrics = calculate_readability_metrics(sentence)
         flesch_score = readability_metrics.get("flesch_score", 0)
+        # Expected type 'int' (matched generic type
+        # 'SupportsRichComparisonT ≤: Union[SupportsDunderLT, SupportsDunderGT]'), got 'float' instead
+        # Вообще не должно работать
         features["readability_score"] = max(0, min(flesch_score / 100, 1.0))
 
         return features
@@ -82,7 +87,7 @@ class FeatureBasedSummarizer(BaseSummarizer):
             edge_score = 1.0 - (distance_to_edge / (total / 2))
             return self._position_weights["middle"] * edge_score
 
-    def _calculate_length_score(self, word_count: int) -> float:
+    def _calculate_length_score(self, word_count: int) -> float:  # Method '_calculate_length_score' may be 'static'
         if 15 <= word_count <= 25:
             return 1.0
         elif 10 <= word_count < 15 or 25 < word_count <= 30:
@@ -93,6 +98,7 @@ class FeatureBasedSummarizer(BaseSummarizer):
             return 0.1
 
     def _calculate_importance_score(self, features: Dict[str, float]) -> float:
+        # Method '_calculate_length_score' may be 'static'
         weights = {
             "position_score": 0.25,
             "length_score": 0.15,

@@ -1,5 +1,9 @@
 import pytest
 from src.textsummarizer.methods.frequency_based import FrequencyBasedSummarizer
+# Вы вынесли `FrequencyBasedSummarizer` в `methods/__init__.py`,
+# поэтому можете импортировать его напрямую из `textsummarizer.methods`
+# Если бы вы донастроили pytest в `pyproject.toml`, то `src` при импорте не пришлось бы указывать
+# Правильная строчка импорта: `from textsummarizer.methods import FrequencyBasedSummarizer`
 from src.textsummarizer.methods.feature_based import FeatureBasedSummarizer
 
 

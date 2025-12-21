@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 import re
 import string
 from typing import List, Dict, Tuple
@@ -82,7 +84,7 @@ def calculate_readability_metrics(text: str) -> Dict[str, float]:
     total_words = len(words)
 
     def count_syllables(word: str) -> int:
-        vowels = "аеёиоуыэюяaeiouy"
+        vowels = "аеёиоуыэюяaeiouy"  # Следовало вынести из py-файлов. Например, в txt.
         return sum(1 for char in word.lower() if char in vowels)
 
     total_syllables = sum(count_syllables(word) for word in words)
