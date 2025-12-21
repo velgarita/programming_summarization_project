@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 from enum import Enum

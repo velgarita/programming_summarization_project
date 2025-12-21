@@ -1,3 +1,8 @@
+# Не отсортированы импорты, почти нигде нет докстрингов
+
+# Этот файл должен лежать в корне `src`, поскольку не является частью модуля `textsummarizer`.
+# И `__main__.py` в таком случае писать не нужно было. Вместо этого нужно было запускать `cli.py` напрямую.
+
 import click
 import logging
 from pathlib import Path
@@ -5,11 +10,14 @@ from typing import Optional
 from .core import TextSummarizer
 from .entities import SummaryMethod
 from .utils.file_io import read_text_file, write_text_file, save_json
+# Вы вынесли `read_text_file`, `write_text_file`, `save_json` в `utils/__init__.py`,
+# поэтому можете импортировать их напрямую из `utils`
 from .utils.vizualization import (
     plot_sentence_scores,
     plot_summary_comparison,
     plot_readability_metrics,
 )
+# То же самое
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

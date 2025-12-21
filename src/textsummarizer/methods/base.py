@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from abc import ABC, abstractmethod
 from typing import List
 from ..entities import Sentence
@@ -10,7 +12,7 @@ class BaseSummarizer(ABC):
     ) -> List[Sentence]:
         pass
 
-    def _prepare_text(self, text: str) -> List[str]:
+    def _prepare_text(self, text: str) -> List[str]:  # Method '_prepare_text' may be 'static'
         import re
 
         # Удаляем пунктуацию, приводим к нижнему регистру

@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from .entities import TextStats, ReadabilityMetrics
 from .utils.text_processing import (
     split_into_sentences,
@@ -5,6 +7,9 @@ from .utils.text_processing import (
     tokenize_words,
     calculate_readability_metrics,
 )
+# Вы вынесли `split_into_sentences`, `preprocess_text`, `tokenize_words`, `calculate_readability_metrics`
+# в `utils/__init__.py`,
+# поэтому можете импортировать их напрямую из `utils`
 
 
 class StatisticsCalculator:
@@ -41,9 +46,9 @@ class StatisticsCalculator:
             avg_sentence_length=original_readability_dict.get("avg_sentence_length", 0),
             avg_word_length=original_readability_dict.get("avg_word_length", 0),
             lexical_diversity=original_readability_dict.get("lexical_diversity", 0),
-            total_sentences=original_readability_dict.get("total_sentences", 0),
-            total_words=original_readability_dict.get("total_words", 0),
-            unique_words=original_readability_dict.get("unique_words", 0),
+            total_sentences=original_readability_dict.get("total_sentences", 0),  # Expected type 'int', got 'float'
+            total_words=original_readability_dict.get("total_words", 0),  # Expected type 'int', got 'float' instead
+            unique_words=original_readability_dict.get("unique_words", 0),  # Expected type 'int', got 'float' instead
         )
 
         summary_readability = ReadabilityMetrics(
@@ -51,9 +56,9 @@ class StatisticsCalculator:
             avg_sentence_length=summary_readability_dict.get("avg_sentence_length", 0),
             avg_word_length=summary_readability_dict.get("avg_word_length", 0),
             lexical_diversity=summary_readability_dict.get("lexical_diversity", 0),
-            total_sentences=summary_readability_dict.get("total_sentences", 0),
-            total_words=summary_readability_dict.get("total_words", 0),
-            unique_words=summary_readability_dict.get("unique_words", 0),
+            total_sentences=summary_readability_dict.get("total_sentences", 0),  # Expected type 'int', got 'float'
+            total_words=summary_readability_dict.get("total_words", 0),  # Expected type 'int', got 'float' instead
+            unique_words=summary_readability_dict.get("unique_words", 0),  # Expected type 'int', got 'float' instead
         )
 
         return TextStats(

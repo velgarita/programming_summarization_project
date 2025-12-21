@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from typing import List, Dict, Set
 import math
 from collections import Counter
@@ -11,8 +13,8 @@ class FrequencyBasedSummarizer(BaseSummarizer):
         self.use_stopwords = use_stopwords
         self._stopwords = self._load_stopwords() if use_stopwords else set()
 
-    def _load_stopwords(self) -> Set[str]:
-        russian_stopwords = {
+    def _load_stopwords(self) -> Set[str]:  # Method '_calculate_length_score' may be 'static'
+        russian_stopwords = {  # Следовало вынести из py-файлов. Например, в txt.
             "и",
             "в",
             "во",

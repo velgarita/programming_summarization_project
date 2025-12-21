@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 from typing import List
 from .entities import SummaryMethod, SummaryResult
 from .methods import FrequencyBasedSummarizer, FeatureBasedSummarizer

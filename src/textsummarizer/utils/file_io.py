@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 import json
 import csv
 from pathlib import Path
@@ -21,6 +23,8 @@ def read_text_file(filepath: Union[str, Path], encoding: str = "utf-8") -> str:
         logger.info(f"Файл успешно прочитан: {filepath}")
         return content
     except UnicodeDecodeError as e:
+        # (Совет) Под `except` используйте `logger.exception`, чтобы получить в консоли Traceback.
+        # Это бывает полезно при отладке
         error_msg = f"Ошибка кодировки файла {filepath}: {e}"
         logger.error(error_msg)
         raise
@@ -45,6 +49,7 @@ def save_json(
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(path, "w", encoding="utf-8") as file:
+        # file - Expected type 'SupportsWrite[str]', got 'TextIO' instead
         json.dump(data, file, ensure_ascii=False, indent=indent)
 
     logger.info(f"Данные сохранены в JSON: {filepath}")
@@ -80,6 +85,7 @@ def save_csv(filepath: Union[str, Path], data: List[Dict[str, Any]]) -> None:
     fieldnames = data[0].keys()
 
     with open(path, "w", newline="", encoding="utf-8") as file:
+        # file - Expected type 'SupportsWrite[str]', got 'TextIO' instead
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(data)

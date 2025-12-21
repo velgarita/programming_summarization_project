@@ -1,3 +1,5 @@
+# Не отсортированы импорты, нет докстрингов
+
 import matplotlib.pyplot as plt
 import matplotlib
 from typing import List, Dict, Any
